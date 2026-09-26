@@ -1,0 +1,23 @@
+name: sat-tiles
+on:
+  push:
+    branches: [sat-tiles-tmp]
+    paths: ['sat/params.json','sat/build.py','.github/workflows/sat-tiles.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install pillow
+      - run: python sat/build.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sat/out
+          git commit -m "satellite mosaics [skip ci]"
+          git push
